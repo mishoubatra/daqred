@@ -31,28 +31,15 @@ class _SignupState extends State<Signup> {
     print('action signup');
   }
 
-  // void _signUp() async {
-  //   try {
-  //     UserCredential userCredential =
-  //         await FirebaseAuth.instance.createUserWithEmailAndPassword(
-  //       email: userNameController.text,
-  //       password: passwordController.text,
-  //     );
-  //     print('saving');
-  //   } on FirebaseAuthException catch (err) {
-  //     print(err.code);
-  //   }
-  // }
-
   // TODO: Make sure the passwords are the same
 
   @override
   Widget build(BuildContext context) {
-    void _signUp() {
-      /// I pass context because the [main.dart] function [signUp]
-      /// will pop off the sign up page if it executes correctly
-      widget.signUp(userNameController.text, passwordController.text, context);
-    }
+    void _signUp() => widget.signUp(
+          userNameController.text,
+          passwordController.text,
+          context,
+        );
 
     return Scaffold(
       appBar: AppBar(

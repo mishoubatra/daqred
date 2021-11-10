@@ -32,8 +32,11 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    void _login() =>
-        widget.login(userNameController.text, passwordController.text);
+    void _login() => widget.login(
+          userNameController.text,
+          passwordController.text,
+          context,
+        );
 
     return Scaffold(
       appBar: AppBar(

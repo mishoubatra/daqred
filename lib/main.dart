@@ -1,24 +1,21 @@
+// Essential Packages
 import 'package:flutter/material.dart';
-
 // * Screens
 
 import 'Auth/login_page.dart';
 import 'Auth/signup_page.dart';
+import 'home_page.dart' show Homepage;
 
-// Import the firebase_core plugin
+/// import[Firebase] | this is Database
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// Root
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(App());
 }
 
-/// We are using a StatefulWidget such that we only create the [Future] once,
-/// no matter how many times our widget rebuild.
-/// If we used a [StatelessWidget], in the event where [App] is rebuilt, that
-/// would re-initialize FlutterFire and make our application re-enter loading state,
-/// which is undesired.
 class App extends StatefulWidget {
   // Create the initialization Future outside of `build`:
   @override
@@ -28,6 +25,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   /// The future is part of the state of our widget. We should not call `initializeApp`
   /// directly inside [build].
+  /// Initialize [Firebase]
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
@@ -61,65 +59,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isSignedIn = false;
+////  bool _isSignedIn = false;
 
-  // _buildLogin(login) {
-  //   return MaterialApp(
-  //     debugShowCheckedModeBanner: false,
-  //     theme: ThemeData(primarySwatch: Colors.red),
-  //     title: 'Daqred',
-  //     home: Login(UniqueKey(), login),
-  //     routes: {
-  //       '/signup': (context) => const Signup(),
-  //     },
-  //   );
-  // }
-
-  // _buildApp(logout) {
-  //   return MaterialApp(
-  //     debugShowCheckedModeBanner: false,
-  //     theme: ThemeData(primarySwatch: Colors.red),
-  //     title: 'Daqred',
-  //     home: Scaffold(
-  //       appBar: AppBar(
-  //         title: const Text('Logged In!'),
-  //       ),
-  //       body: Center(
-  //         child: Column(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             const Text('You are signed In!'),
-  //             ElevatedButton(onPressed: logout, child: const Text('Logout'))
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
+  // Handles the state change for when the user logs in or out and notifying the backend
   @override
   Widget build(BuildContext context) {
-    void _login(String email, String password) async {
+    // Handles all login logic
+    void login(String email, String password, BuildContext context) async {
       try {
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
-        setState(() {
-          _isSignedIn = true;
-        });
+        // Executes only when the backend accepts request
+        // Once logged in through backend navigate to the home page
+        Navigator.pushReplacementNamed(context, '/home');
       } on FirebaseAuthException catch (e) {
-        // if (e.code == 'user-not-found') {
-        //   print('No user found for that email.');
-        // } else if (e.code == 'wrong-password') {
-        //   print('Wrong password provided for that user.');
-        // }
         print(e.code);
       }
     }
 
-    void _signUp(String email, String password, BuildContext context) async {
+    // Handles all sign up logic
+    void signUp(String email, String password, BuildContext context) async {
       try {
         print('executing');
         UserCredential userCredential =
@@ -127,21 +89,21 @@ class _MyAppState extends State<MyApp> {
           email: email,
           password: password,
         );
-        setState(() {
-          _isSignedIn = true;
-        });
-        Navigator.pop(context);
+        // Executes only when the backend accepts request
+        // Once signed up through backend navigate to the home page
+        Navigator.pushReplacementNamed(context, '/home');
       } on FirebaseAuthException catch (err) {
         print(err.code);
       }
     }
 
-    void _logout() async {
+    // Handles all logout logic
+    void logout(BuildContext context) async {
       try {
         await FirebaseAuth.instance.signOut();
-        setState(() {
-          _isSignedIn = false;
-        });
+        // Executes only when the backend accepts request
+        // Once logged out through backend navigate to the login page
+        Navigator.pushReplacementNamed(context, '/login');
       } on FirebaseAuthException catch (e) {
         print(e.code);
       }
@@ -151,25 +113,16 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.red),
       title: 'Daqred',
-      home: _isSignedIn
-          ? Scaffold(
-              appBar: AppBar(
-                title: const Text('Logged In!'),
-              ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('You are signed In!'),
-                    ElevatedButton(
-                        onPressed: _logout, child: const Text('Logout'))
-                  ],
-                ),
-              ),
-            )
-          : Login(login: _login),
+      // ! Later add logic for automatic sign in because right now the app will
+      // ! always go to the login page initially
+      home: Login(
+        login: login,
+      ),
+      // ? the routes of our application
       routes: {
-        '/signup': (context) => Signup(signUp: _signUp),
+        '/login': (context) => Login(login: login),
+        '/signup': (context) => Signup(signUp: signUp),
+        '/home': (context) => Homepage(logout: logout)
       },
     );
   }
