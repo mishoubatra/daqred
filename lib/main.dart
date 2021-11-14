@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 import 'Auth/login_page.dart';
 import 'Auth/signup_page.dart';
-import 'home_page.dart' show Homepage;
+import 'screens/home_page.dart' show Homepage;
 
 /// import[Firebase] | this is Database
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Root
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(App());
 }
@@ -114,7 +114,6 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(primarySwatch: Colors.red),
       title: 'Daqred',
       // ! Later add logic for automatic sign in because right now the app will
-      // ! always go to the login page initially
       home: Login(
         login: login,
       ),
